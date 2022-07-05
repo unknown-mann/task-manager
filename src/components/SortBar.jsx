@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { switchSortType } from './tasksSlice';
+import { switchSortType } from '../app/tasksSlice';
 
 const SortEl = styled.form`
     display: flex;
@@ -31,7 +31,10 @@ const SortLabel = styled.label`
     text-decoration: none;
     cursor: pointer;
     :hover {
-        opacity: 0.6;
+        opacity: 0.7;
+    };
+    :active {
+        opacity: 0.5;
     }
 `
 

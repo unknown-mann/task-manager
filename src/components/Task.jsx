@@ -1,11 +1,11 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import { formatTaskDueDate } from "../utils/utils";
 import { isTaskExpired, isTaskRepeating, taskRepeatingDays } from "../utils/utils";
-import { deleteTask, toggleArchive, toggleFavorite } from "./tasksSlice";
+import { deleteTask, toggleArchive, toggleFavorite } from "../app/tasksSlice";
 import { motion } from "framer-motion";
-import UpdateTaskModal from "./UpdateTaskModal";
+import EditTaskModal from "./modal/EditTaskModal";
 
 const TaskEl = styled(motion.article)`
     position: relative;
@@ -29,9 +29,12 @@ const TaskContent = styled.div`
     outline: 0;
     :hover {
         outline: 10px solid white;
-        transition: outline-width 0.2s ease-in-out;
-        box-shadow: 0 -14px 38px 0 rgba(35, 113, 245, 0.07),
-          0 14px 38px 0 rgba(35, 113, 245, 0.07);
+        transition: outline-width 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        box-shadow: ${props => props.isExpired 
+            ? 
+            '0 -14px 38px 0 rgba(240, 0, 0, 0.19), 0 14px 38px 0 rgba(240, 0, 0, 0.19);' 
+            : 
+            '0 -14px 38px 0 rgba(35, 113, 245, 0.07), 0 14px 38px 0 rgba(35, 113, 245, 0.07);'}
         z-index: 1;
         button {
             opacity: 1;
@@ -67,7 +70,6 @@ const Button = styled.button`
     opacity: 0;
     transition: 0.4s;
     color: ${props => props.color || 'inherit'};
-    background-image: ${props => props.favorite ? 'linear-gradient(45deg, #CA4246 16.666%, #E16541 16.666%, #E16541 33.333%, #F18F43 33.333%, #F18F43 50%, #8B9862 50%, #8B9862 66.666%, #476098 66.666%, #476098 83.333%, #A7489B 83.333%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;' : 'inherit'};
     :hover {
         transition: 0s;
     };
@@ -82,7 +84,7 @@ const DescriptionEl = styled.span`
     margin-top: 15px;
     margin-bottom: 10px;
     font-weight: 500;
-    overflow: scroll;
+    overflow: auto;
 `;
 
 const Wrapper = styled.div`
@@ -109,14 +111,6 @@ const RepeatingDays = styled.div`
 
 const Task = ({ task }) => {
 
-    const [active, setActive] = useState(false)
-
-    const dispatch = useDispatch();
-
-    const handleToggleArchive = (id) => dispatch(toggleArchive(id));
-    const handleToggleFavorite = (id) => dispatch(toggleFavorite(id));
-    const handleDeleteTask = (id) => dispatch(deleteTask(id));
-
     const {
         id,
         color,
@@ -127,6 +121,14 @@ const Task = ({ task }) => {
         repeatingDays
     } = task
 
+    const dispatch = useDispatch();
+
+    const [modalActive, setModalActive] = useState(false)
+
+    const handleToggleArchive = (id) => dispatch(toggleArchive(id));
+    const handleToggleFavorite = (id) => dispatch(toggleFavorite(id));
+    const handleDeleteTask = (id) => dispatch(deleteTask(id));
+
     const isExpired = isTaskExpired(dueDate)
     const isRepeating = isTaskRepeating(repeatingDays)
     const repeatsOn = taskRepeatingDays(repeatingDays)
@@ -135,14 +137,13 @@ const Task = ({ task }) => {
         <TaskEl
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, y: 20 }}
-            transition={{duration: 0.2}}
-        >
+            transition={{ duration: 0.2 }}>
             <TaskContent isExpired={isExpired}>
                 <ButtonsWrapper>
-                    <Button onClick={() => setActive(true)}>EDIT</Button>
+                    <Button onClick={() => setModalActive(true)}>EDIT</Button>
                     <Button onClick={() => handleToggleArchive(id)}>
                         {isArchived ? 'UNARCHIVE' : 'ARCHIVE'}</Button>
-                    <Button onClick={() => handleToggleFavorite(id)} favorite={isFavorite}>FAVORITES</Button>
+                    <Button onClick={() => handleToggleFavorite(id)}>{isFavorite ? 'DEL ' : 'ADD '}FAV</Button>
                 </ButtonsWrapper>
                 <ColorEl color={color} isExpired={isExpired} isRepeating={isRepeating} />
                 <DescriptionEl>{description}</DescriptionEl>
@@ -160,7 +161,7 @@ const Task = ({ task }) => {
                     <Button onClick={() => handleDeleteTask(id)} color="red">DELETE</Button>
                 </Wrapper>
             </TaskContent>
-            <UpdateTaskModal active={active} setActive={setActive} task={task}/>
+            {modalActive && <EditTaskModal modalActive={modalActive} setModalActive={setModalActive} task={task} />}
         </TaskEl>
     );
 };

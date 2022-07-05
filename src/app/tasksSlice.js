@@ -32,11 +32,11 @@ export const addNewTask = createAsyncThunk(
         } catch (error) {
             return rejectWithValue(error.message)
         }
-})
+    })
 
 export const deleteTask = createAsyncThunk(
     'tasks/deleteTask',
-    async (id, {rejectWithValue}) => {
+    async (id, { rejectWithValue }) => {
         try {
             await axios.delete(`https://server-for--task-manager.herokuapp.com/tasks/${id}`)
             return id
@@ -48,7 +48,7 @@ export const deleteTask = createAsyncThunk(
 
 export const toggleArchive = createAsyncThunk(
     'tasks/addToArchive',
-    async (id, {rejectWithValue, getState}) => {
+    async (id, { rejectWithValue, getState }) => {
         try {
             const task = getState().tasks.tasks.find(task => task.id === id)
             await axios.patch(`https://server-for--task-manager.herokuapp.com/tasks/${id}`, {
@@ -67,7 +67,7 @@ export const toggleArchive = createAsyncThunk(
 
 export const toggleFavorite = createAsyncThunk(
     'tasks/addToFavorite',
-    async (id, {rejectWithValue, getState}) => {
+    async (id, { rejectWithValue, getState }) => {
         try {
             const task = getState().tasks.tasks.find(task => task.id === id)
             await axios.patch(`https://server-for--task-manager.herokuapp.com/tasks/${id}`, {
@@ -84,9 +84,9 @@ export const toggleFavorite = createAsyncThunk(
     }
 );
 
-export const editTask = createAsyncThunk(
+export const updateTask = createAsyncThunk(
     'tasks/editTask',
-    async (task, {rejectWithValue}) => {
+    async (task, { rejectWithValue }) => {
         try {
             await axios.patch(`https://server-for--task-manager.herokuapp.com/tasks/${task.id}`, {
                 color: task.color,
@@ -99,7 +99,7 @@ export const editTask = createAsyncThunk(
                 }
             })
             return task
-        } catch(error) {
+        } catch (error) {
             return rejectWithValue(error.message)
         }
     }
@@ -129,10 +129,6 @@ const tasksSlice = createSlice({
                 state.tasks = action.payload
                 state.status = 'succeeded'
             })
-            .addCase(fetchTasks.rejected, (state, action) => {
-                state.error = action.payload
-                state.status = 'rejected'
-            })
             .addCase(addNewTask.fulfilled, (state, action) => {
                 state.tasks.push(action.payload)
             })
@@ -147,17 +143,24 @@ const tasksSlice = createSlice({
                 const favoriteTask = state.tasks.find(task => task.id === action.payload)
                 favoriteTask.isFavorite = !favoriteTask.isFavorite
             })
-            .addCase(editTask.fulfilled, (state, action) => {
+            .addCase(updateTask.fulfilled, (state, action) => {
                 const newTask = action.payload
-                console.log('new task: ', newTask)
                 const oldTask = state.tasks.find(task => task.id === newTask.id)
                 oldTask.color = newTask.color
                 oldTask.description = newTask.description
                 oldTask.dueDate = newTask.dueDate
                 oldTask.repeatingDays = newTask.repeatingDays
             })
+            .addMatcher(isEror, (state, action) => {
+                state.error = action.payload
+                state.status = 'rejected'
+            })
     }
 })
+
+const isEror = (action) => {
+    return action.type.endsWith('rejected')
+}
 
 export const { switchSortType } = tasksSlice.actions
 

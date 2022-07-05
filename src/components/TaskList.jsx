@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import Task from "./Task";
 import { motion, AnimatePresence } from "framer-motion";
+import Task from "./Task";
 
 const TaskListEl = styled(motion.section)`
     display: flex;

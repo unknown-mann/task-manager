@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 import { Container } from "./Container";
-import { Button } from './Button';
+import { AddTaskModal } from './modal/AddTaskModal';
 
 const Wrapper = styled.div`
   display: flex;
@@ -18,6 +18,23 @@ const Title = styled.h1`
   margin-right: 100px;
   font-size: 16px;
   line-height: 23px;
+`;
+
+const Button = styled.button`
+  padding: 0;
+  font-size: 16px;
+  font-weight: normal;
+  color: inherit;
+  background-color: transparent;
+  border: none;
+  text-decoration: none;
+  cursor: pointer;
+    :hover {
+    opacity: 0.7;
+  };
+    :active {
+    opacity: 0.5;
+  }
 `;
 
 const Navbar = styled.nav`
@@ -39,11 +56,13 @@ const NavItem = styled(NavLink)`
   }
 `;
 
-const Header = ({ allTasksNum, favoriteTasksNum, repeatingTasksNum, archivedTasksNum, expiredTasksNum, todayTasksNum, setActive }) => {
+const Header = ({ allTasksNum, favoriteTasksNum, repeatingTasksNum, archivedTasksNum, expiredTasksNum, todayTasksNum }) => {
 
   const isDisabledHandler = param => event => {
     !param && event.preventDefault()
   }
+
+  const [modalActive, setModalActive] = useState(false)
 
 
   return (
@@ -51,7 +70,8 @@ const Header = ({ allTasksNum, favoriteTasksNum, repeatingTasksNum, archivedTask
       <Container>
         <Wrapper>
           <Title>TASKMANAGER</Title>
-          <Button onClick={() => setActive(true)}>+ ADD NEW TASK</Button>
+          <Button onClick={() => setModalActive(true)}>+ ADD NEW TASK</Button>
+          {modalActive && <AddTaskModal modalActive={modalActive} setModalActive={setModalActive} />}
         </Wrapper>
         <Navbar>
           <NavItem to="/">

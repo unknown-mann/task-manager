@@ -1,7 +1,7 @@
 import React from 'react';
 import { TaskList } from '../components/TaskList';
 
-const TodayTasks = ({tasks}) => {
+const TodayTasks = ({ tasks }) => {
     return <TaskList tasks={tasks} />
 };
 
