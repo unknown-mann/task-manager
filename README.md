@@ -1,46 +1,67 @@
-# Getting Started with Create React App and Redux
+# Task manager
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) template.
+Данный проект был сконфигурирован при помощи шаблона `Create React App`
 
-## Available Scripts
 
-In the project directory, you can run:
+## Установка
 
+Склонируйте проект себе, загрузите все необходимые модули командой:
+### `npm i`
+
+и запустите командой:
 ### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Используемые технологии:
 
-### `npm test`
+* `React` с применением хуков
+* `Redux RTK` для управления глобальным состоянием
+* `Styled Components` для создания компонентов
+* `Axios` для запросов к серверу
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Особенности REST API
 
-### `npm run build`
+При запуске приложения в первый раз или спустя 30 минут неактивности, подгрузка списка задач займет несколько секунд.
+API должно спать пару часов каждый день.
+Каждая добавленная задача через приложение удаляется спустя некоторое время.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Описание проекта
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
+### Главная страница
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+При запуске приложения вы попадете на главную страницу со списком всех задач (за исключением тех, что находятся в архиве), отсортированных по умолчанию. Вы можете переключаться между разными категориями задач и фильтровать их по дате:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+<img width="1440" alt="Screen Shot 2022-07-05 at 18 03 58" src="https://user-images.githubusercontent.com/99764749/177323301-8cfa49b7-5217-48a8-a290-bfe625d610f2.png">
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Карточка задачи
 
-## Learn More
+Если дэдлайн задачи истек, то задача будет подсвечиваться красным и цвет даты также сменится на красный.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+В интерфейсе карточки задачи при наведении курсора мыши доступны следующие функции:
+При клике на ADD FAV или DEL FAV происходит добавление или удаление задачи в списке FAVORITES;
+При клике на ARCHIVE или UNARCHIVE происходит добавление или удаление задачи в списке ARCHIVE (при добавлении задачи в ARCHIVE, задача исчезает из всех списков кроме ARCHIVE);
+При наличии даты дэдлайна задачи, соответствующая дата будет отображена в левом нижнем углу карточки вне зависимости от того наведен курсор или нет, при налчии повторяющихся дней задачи, соответствующие дни будут отображены только при наведении курсора;
+При клике на кнопку DELETE задача будет удалена из всех списков.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+<img width="1440" alt="Screen Shot 2022-07-05 at 18 26 31" src="https://user-images.githubusercontent.com/99764749/177327189-561bd71e-9096-4adb-af8c-7dcb679672c2.png">
+
+
+### Добавление новой задачи
+
+При клике на +ADD NEW TASK откроется модальное окно с возможностью добавить новую задачу. Выберите понравившийся вам цвет задачи, описание и дату дэдлайна задачи, либо если желаете, чтобы задача повторялась, можете выбрать соответствующие дни недели (в зависимости от выбора типа задачи, цветовой бар будет иметь соответствующий стиль: при выборе даты дэдлайна бар будет сплошным, при выборе повторяющихся дней недели - пунктирным). Задача не может быть сохранена без выбора одного из типа даты:
+
+<img width="406" alt="Screen Shot 2022-07-05 at 18 10 18" src="https://user-images.githubusercontent.com/99764749/177325846-a4a5d049-5133-421e-997b-8d32ed2a62a1.png">
+
+
+### Редактирование существующей задачи
+
+При клике на кнопку EDIT в карточке задачи вам откроется модальное окно с возможностью редактировать выбранную задачу, принцип такой же как при добавлении новой задачи, только начальные данные заполняются исходя из выбранной задачи:
+
+<img width="389" alt="Screen Shot 2022-07-05 at 18 24 25" src="https://user-images.githubusercontent.com/99764749/177326828-368a5b40-9b4c-4cfc-b335-40550e77dce2.png">
+
+
+
+
