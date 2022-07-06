@@ -8,36 +8,35 @@ const TaskListEl = styled(motion.section)`
     align-items: flex-start;
     min-height: 500px;
     margin-right: -60px;
-`
+`;
+
+const container = {
+    hidden: {
+         opacity: 1, 
+         scale: 0 
+        },
+    visible: {
+        opacity: 1,
+        scale: 1,
+        transition: {
+            delayChildren: 0.3,
+            staggerChildren: 0.1
+        }
+    }
+};
+
+const item = {
+    hidden: { 
+        y: 20, 
+        opacity: 0
+    },
+    visible: {
+        y: 0,
+        opacity: 1
+    }
+};
 
 export const TaskList = ({ tasks }) => {
-
-    const container = {
-        hidden: {
-             opacity: 1, 
-             scale: 0 
-            },
-        visible: {
-            opacity: 1,
-            scale: 1,
-            transition: {
-                delayChildren: 0.3,
-                staggerChildren: 0.1
-            }
-        }
-    };
-
-    const item = {
-        hidden: { 
-            y: 20, 
-            opacity: 0
-        },
-        visible: {
-            y: 0,
-            opacity: 1
-        }
-    };
-
 
     if (!tasks.length) {
         return (
