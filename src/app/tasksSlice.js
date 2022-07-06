@@ -144,12 +144,12 @@ const tasksSlice = createSlice({
                 favoriteTask.isFavorite = !favoriteTask.isFavorite
             })
             .addCase(updateTask.fulfilled, (state, action) => {
-                const newTask = action.payload
-                const oldTask = state.tasks.find(task => task.id === newTask.id)
-                oldTask.color = newTask.color
-                oldTask.description = newTask.description
-                oldTask.dueDate = newTask.dueDate
-                oldTask.repeatingDays = newTask.repeatingDays
+                const { id, color, description, dueDate, repeatingDays } = action.payload
+                const oldTask = state.tasks.find(task => task.id === id)
+                oldTask.color = color
+                oldTask.description = description
+                oldTask.dueDate = dueDate
+                oldTask.repeatingDays = repeatingDays
             })
             .addMatcher(isEror, (state, action) => {
                 state.error = action.payload
