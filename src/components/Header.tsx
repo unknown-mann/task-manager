@@ -44,7 +44,7 @@ const Navbar = styled.nav`
   padding: 2rem 0;
 `;
 
-const NavItem = styled(NavLink)`
+const NavItem = styled(NavLink) <{ disabled?: boolean }>`
   list-style-type: none;
   text-decoration: none;
   color: black;
@@ -56,9 +56,9 @@ const NavItem = styled(NavLink)`
   }
 `;
 
-const Header = ({ allTasksNum, favoriteTasksNum, repeatingTasksNum, archivedTasksNum, expiredTasksNum, todayTasksNum }) => {
+const Header: React.FC<Record<string, number>> = ({ allTasksNum, favoriteTasksNum, repeatingTasksNum, archivedTasksNum, expiredTasksNum, todayTasksNum }) => {
 
-  const isDisabledHandler = param => event => {
+  const isDisabledHandler = (param: number) => (event: React.MouseEvent<HTMLElement>) => {
     !param && event.preventDefault()
   }
 

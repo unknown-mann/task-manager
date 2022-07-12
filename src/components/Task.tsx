@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
 import styled from "styled-components";
+import { useAppDispatch } from "../hooks/hooks";
 import { formatTaskDueDate } from "../utils/utils";
 import { isTaskExpired, isTaskRepeating, taskRepeatingDays } from "../utils/utils";
 import { deleteTask, toggleArchive, toggleFavorite } from "../app/tasksSlice";
+import { TaskType } from "../types/Types";
 import { motion } from "framer-motion";
 import EditTaskModal from "./modal/EditTaskModal";
 
@@ -14,7 +15,7 @@ const TaskEl = styled(motion.article)`
     margin-bottom: 40px;
     margin-right: 59px;
 `
-const TaskContent = styled.div`
+const TaskContent = styled.div<{isExpired: boolean}>`
     position: absolute;
     width: 100%;
     top: 0;
@@ -75,7 +76,7 @@ const Button = styled.button`
     };
 `;
 
-const ColorEl = styled.span`
+const ColorEl = styled.span<{isRepeating: boolean, isExpired: boolean}>`
     border-bottom: 10px ${props => props.isRepeating ? 'dashed' : 'solid'} ;
     border-color: ${props => props.isExpired ? 'red' : props.color};
 `;
@@ -94,7 +95,7 @@ const Wrapper = styled.div`
     margin-top: auto;
 `;
 
-const DateEl = styled.span`
+const DateEl = styled.span<{isExpired: boolean}>`
     margin-bottom: 8px;
     font-size: 12px;
     font-weight: 500;
@@ -109,7 +110,11 @@ const RepeatingDays = styled.div`
     font-size: 10px;
 `;
 
-const Task = ({ task }) => {
+type PropsType = {
+    task: TaskType
+};
+
+const Task: React.FC<PropsType> = React.memo(({ task }) => {
 
     const {
         id,
@@ -121,13 +126,13 @@ const Task = ({ task }) => {
         repeatingDays
     } = task
 
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
 
     const [modalActive, setModalActive] = useState(false)
 
-    const handleToggleArchive = (id) => dispatch(toggleArchive(id));
-    const handleToggleFavorite = (id) => dispatch(toggleFavorite(id));
-    const handleDeleteTask = (id) => dispatch(deleteTask(id));
+    const handleToggleArchive = (id: string) => dispatch(toggleArchive(id));
+    const handleToggleFavorite = (id: string) => dispatch(toggleFavorite(id));
+    const handleDeleteTask = (id: string) => dispatch(deleteTask(id));
 
     const isExpired = isTaskExpired(dueDate)
     const isRepeating = isTaskRepeating(repeatingDays)
@@ -138,17 +143,17 @@ const Task = ({ task }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.2 }}>
-            <TaskContent isExpired={isExpired}>
+            <TaskContent isExpired={isExpired as boolean}>
                 <ButtonsWrapper>
                     <Button onClick={() => setModalActive(true)}>EDIT</Button>
                     <Button onClick={() => handleToggleArchive(id)}>
                         {isArchived ? 'UNARCHIVE' : 'ARCHIVE'}</Button>
                     <Button onClick={() => handleToggleFavorite(id)}>{isFavorite ? 'DEL ' : 'ADD '}FAV</Button>
                 </ButtonsWrapper>
-                <ColorEl color={color} isExpired={isExpired} isRepeating={isRepeating} />
+                <ColorEl color={color} isExpired={isExpired as boolean} isRepeating={isRepeating} />
                 <DescriptionEl>{description}</DescriptionEl>
                 <Wrapper>
-                    <DateEl isExpired={isExpired}>
+                    <DateEl isExpired={isExpired as boolean}>
                         {formatTaskDueDate(dueDate) ||
                             (isRepeating &&
                                 <RepeatingDays>
@@ -164,6 +169,6 @@ const Task = ({ task }) => {
             {modalActive && <EditTaskModal modalActive={modalActive} setModalActive={setModalActive} task={task} />}
         </TaskEl>
     );
-};
+});
 
 export default Task;

@@ -1,21 +1,25 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, AnyAction, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { nanoid } from "nanoid";
+import type { TaskType, StateType } from "../types/Types";
 
-export const fetchTasks = createAsyncThunk('tasks/fetchTasks', async (_, { rejectWithValue }) => {
-    try {
-        const response = await axios.get('https://server-for--task-manager.herokuapp.com/tasks')
-        return response.data
-    } catch (error) {
-        return rejectWithValue(error.message)
-    }
-})
+const BASE_URL = 'https://server-for--task-manager.herokuapp.com/tasks/';
 
-export const addNewTask = createAsyncThunk(
+export const fetchTasks = createAsyncThunk<TaskType[], undefined, { rejectValue: string }>
+    ('tasks/fetchTasks', async (_, { rejectWithValue }) => {
+        try {
+            const response = await axios.get(BASE_URL)
+            return response.data
+        } catch (error: any) {
+            return rejectWithValue(error.message)
+        }
+    })
+
+export const addNewTask = createAsyncThunk<TaskType, TaskType, { rejectValue: string }>(
     'tasks/addNewTask',
     async (task, { rejectWithValue }) => {
         try {
-            const respone = await axios.post('https://server-for--task-manager.herokuapp.com/tasks', {
+            const respone = await axios.post(BASE_URL, {
                 "id": nanoid(),
                 "color": task.color,
                 "description": task.description,
@@ -28,67 +32,67 @@ export const addNewTask = createAsyncThunk(
                     'Content-Type': 'application/json'
                 }
             })
-            return respone.data
-        } catch (error) {
+            return respone.data as TaskType
+        } catch (error: any) {
             return rejectWithValue(error.message)
         }
     })
 
-export const deleteTask = createAsyncThunk(
+export const deleteTask = createAsyncThunk<string, string, { rejectValue: string }>(
     'tasks/deleteTask',
     async (id, { rejectWithValue }) => {
         try {
-            await axios.delete(`https://server-for--task-manager.herokuapp.com/tasks/${id}`)
+            await axios.delete(BASE_URL + id)
             return id
-        } catch (error) {
+        } catch (error: any) {
             return rejectWithValue(error.message)
         }
     }
 )
 
-export const toggleArchive = createAsyncThunk(
+export const toggleArchive = createAsyncThunk<string, string, { rejectValue: string, state: { tasks: StateType } }>(
     'tasks/addToArchive',
     async (id, { rejectWithValue, getState }) => {
         try {
             const task = getState().tasks.tasks.find(task => task.id === id)
-            await axios.patch(`https://server-for--task-manager.herokuapp.com/tasks/${id}`, {
-                isArchived: !task.isArchived
+            await axios.patch(BASE_URL + id, {
+                isArchived: !task?.isArchived
             }, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
             })
             return id
-        } catch (error) {
+        } catch (error: any) {
             return rejectWithValue(error.message)
         }
     }
 )
 
-export const toggleFavorite = createAsyncThunk(
+export const toggleFavorite = createAsyncThunk<string, string, { rejectValue: string, state: { tasks: StateType } }>(
     'tasks/addToFavorite',
     async (id, { rejectWithValue, getState }) => {
         try {
             const task = getState().tasks.tasks.find(task => task.id === id)
-            await axios.patch(`https://server-for--task-manager.herokuapp.com/tasks/${id}`, {
-                isFavorite: !task.isFavorite
+            await axios.patch(BASE_URL + id, {
+                isFavorite: !task?.isFavorite
             }, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
             })
             return id
-        } catch (error) {
+        } catch (error: any) {
             return rejectWithValue(error.message)
         }
     }
 );
 
-export const updateTask = createAsyncThunk(
+export const updateTask = createAsyncThunk<TaskType, TaskType, { rejectValue: string }>(
     'tasks/editTask',
     async (task, { rejectWithValue }) => {
         try {
-            await axios.patch(`https://server-for--task-manager.herokuapp.com/tasks/${task.id}`, {
+            await axios.patch(BASE_URL + task.id, {
                 color: task.color,
                 description: task.description,
                 dueDate: task.dueDate,
@@ -98,17 +102,17 @@ export const updateTask = createAsyncThunk(
                     'Content-Type': 'application/json'
                 }
             })
-            return task
-        } catch (error) {
+            return task as TaskType
+        } catch (error: any) {
             return rejectWithValue(error.message)
         }
     }
 )
 
-const initialState = {
+const initialState: StateType = {
     tasks: [],
     status: 'idle',
-    error: '',
+    error: null,
     sort: 'default'
 }
 
@@ -137,28 +141,34 @@ const tasksSlice = createSlice({
             })
             .addCase(toggleArchive.fulfilled, (state, action) => {
                 const archivedTask = state.tasks.find(task => task.id === action.payload)
-                archivedTask.isArchived = !archivedTask.isArchived
+                if (archivedTask) {
+                    archivedTask.isArchived = !archivedTask.isArchived
+                }
             })
             .addCase(toggleFavorite.fulfilled, (state, action) => {
                 const favoriteTask = state.tasks.find(task => task.id === action.payload)
-                favoriteTask.isFavorite = !favoriteTask.isFavorite
+                if (favoriteTask) {
+                    favoriteTask.isFavorite = !favoriteTask.isFavorite
+                }
             })
             .addCase(updateTask.fulfilled, (state, action) => {
                 const { id, color, description, dueDate, repeatingDays } = action.payload
                 const oldTask = state.tasks.find(task => task.id === id)
-                oldTask.color = color
-                oldTask.description = description
-                oldTask.dueDate = dueDate
-                oldTask.repeatingDays = repeatingDays
+                if (oldTask) {
+                    oldTask.color = color
+                    oldTask.description = description
+                    oldTask.dueDate = dueDate
+                    oldTask.repeatingDays = repeatingDays
+                }
             })
-            .addMatcher(isEror, (state, action) => {
+            .addMatcher(isEror, (state, action: PayloadAction<string>) => {
                 state.error = action.payload
                 state.status = 'rejected'
             })
     }
 })
 
-const isEror = (action) => {
+const isEror = (action: AnyAction) => {
     return action.type.endsWith('rejected')
 }
 

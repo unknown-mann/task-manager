@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Route, Routes } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from './hooks/hooks';
 import Header from './components/Header';
 import Main from './components/Main'
 import SortBar from './components/SortBar';
@@ -16,9 +16,9 @@ import { isTaskExpired, isTaskExpiringToday, isTaskRepeating, isTaskActiveToday 
 
 const App = () => {
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
-  const { status, error } = useSelector(state => state.tasks)
+  const { status, error } = useAppSelector(state => state.tasks)
 
   useEffect(() => {
     if (status === 'idle') {
@@ -26,7 +26,7 @@ const App = () => {
     }
   }, [dispatch, status])
 
-  const tasks = useSelector(selectFilteredTasks)
+  const tasks = useAppSelector(selectFilteredTasks)
 
   const allTasks = tasks.filter(task => task && !task.isArchived)
   const favoriteTasks = tasks.filter(task => task.isFavorite && !task.isArchived)

@@ -1,6 +1,8 @@
+import React from "react";
 import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import Task from "./Task";
+import { PropsType } from "../types/Types";
 
 const TaskListEl = styled(motion.section)`
     display: flex;
@@ -12,9 +14,9 @@ const TaskListEl = styled(motion.section)`
 
 const container = {
     hidden: {
-         opacity: 1, 
-         scale: 0 
-        },
+        opacity: 1,
+        scale: 0
+    },
     visible: {
         opacity: 1,
         scale: 1,
@@ -26,8 +28,8 @@ const container = {
 };
 
 const item = {
-    hidden: { 
-        y: 20, 
+    hidden: {
+        y: 20,
         opacity: 0
     },
     visible: {
@@ -36,7 +38,7 @@ const item = {
     }
 };
 
-export const TaskList = ({ tasks }) => {
+export const TaskList: React.FC<PropsType> = ({ tasks }) => {
 
     if (!tasks.length) {
         return (
@@ -51,11 +53,11 @@ export const TaskList = ({ tasks }) => {
             animate="visible"
         >
             <AnimatePresence>
-            {tasks.map((task) => (
-                <motion.div key={task.id + 1} variants={item}>
-                    <Task key={task.id} task={task}/>
-                </motion.div>
-            ))}
+                {tasks.map((task) => (
+                    <motion.div key={task.id! + 1} variants={item}>
+                        <Task key={task.id} task={task} />
+                    </motion.div>
+                ))}
             </AnimatePresence>
         </TaskListEl>
     )

@@ -1,7 +1,8 @@
 import React from 'react';
 import { TaskList } from '../components/TaskList';
+import { PropsType } from '../types/Types';
 
-const RepeatingTasks = ({ tasks }) => {
+const RepeatingTasks: React.FC<PropsType> = ({ tasks }) => {
     return <TaskList tasks={tasks} />
 };
 

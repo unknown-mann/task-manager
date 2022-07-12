@@ -1,8 +1,9 @@
 import { createSelector } from "@reduxjs/toolkit";
 import { sortTaskUp, sortTaskDown } from "../utils/utils";
+import { RootState } from "./store";
 
-const selectActiveSort = state => state.tasks.sort
-const selectTasks = state => state.tasks.tasks
+const selectActiveSort = (state: RootState) => state.tasks.sort
+const selectTasks = (state: RootState) => state.tasks.tasks
 
 export const selectFilteredTasks = createSelector(
     [selectActiveSort, selectTasks],

@@ -1,10 +1,11 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { ChangeEvent, useState } from "react";
 import styled from "styled-components";
 import { AnimatePresence } from "framer-motion";
+import { useAppDispatch } from "../../hooks/hooks";
+import { TaskType } from "../../types/Types";
 import { updateTask } from "../../app/tasksSlice";
 import { isTaskRepeating } from "../../utils/utils";
-import { COLORS, IS_REPEATING_DAYS, MODAL_EL_VARIANTS, MODAL_CONTENT_VARIANTS } from "../../const";
+import { COLORS, MODAL_EL_VARIANTS, MODAL_CONTENT_VARIANTS } from "../../const";
 import {
     Modal,
     ModalContent,
@@ -21,7 +22,7 @@ import {
     SaveButton as UpdateButton
 } from "./Modal";
 
-const Bar = styled.div`
+const Bar = styled.div<{isRepeat: boolean}>`
     border-bottom: 10px ${props => props.isRepeat ? 'dashed' : 'solid'} ${props => props.color};
 `;
 
@@ -39,22 +40,28 @@ const ColorButton = styled(ColorButtonEl)`
     }
 `;
 
-const UpdateTaskModal = ({ task, modalActive, setModalActive }) => {
+type PropsType = {
+    task: TaskType,
+    modalActive: boolean,
+    setModalActive: (arg: boolean) => void
+}
 
-    const dispatch = useDispatch();
+const UpdateTaskModal: React.FC<PropsType> = ({ task, modalActive, setModalActive }) => {
+
+    const dispatch = useAppDispatch();
 
     const [taskColor, setTaskColor] = useState(task.color);
     const [description, setDescription] = useState(task.description);
     const [date, setDate] = useState(task.dueDate);
     const [repeatingDays, setRepeatingDays] = useState(task.repeatingDays);
 
-    const [isDate, setIsDate] = useState(task.dueDate);
-    const [isRepeat, setIsRepeat] = useState(() => isTaskRepeating(task.repeatingDays));
+    const [isDate, setIsDate] = useState(Boolean(task.dueDate));
+    const [isRepeat, setIsRepeat] = useState(() => Boolean(isTaskRepeating(task.repeatingDays)));
 
-    const handleSetTaskColor = (evt) => setTaskColor(evt.target.value);
-    const handleSetDescription = (evt) => setDescription(evt.target.value);
-    const handleSetDate = (evt) => setDate(evt.target.value);
-    const handleSetRepeatingDays = (evt) => {
+    const handleSetTaskColor = (evt: ChangeEvent<HTMLFormElement>) => setTaskColor(evt.target.value);
+    const handleSetDescription = (evt: ChangeEvent<HTMLTextAreaElement>) => setDescription(evt.target.value);
+    const handleSetDate = (evt: ChangeEvent<HTMLInputElement>) => setDate(evt.target.value);
+    const handleSetRepeatingDays = (evt: ChangeEvent<HTMLFormElement>) => {
         const arr = evt.target.value.split(',');
         setRepeatingDays(
             {
@@ -63,13 +70,14 @@ const UpdateTaskModal = ({ task, modalActive, setModalActive }) => {
             }
         )
     };
+
     const toggleDateStatus = () => {
         setIsDate(!isDate)
         setDate("")
     };
     const toggleRepeatStatus = () => {
         setIsRepeat(!isRepeat)
-        setRepeatingDays(IS_REPEATING_DAYS)
+        setRepeatingDays(task.repeatingDays)
 
     };
 
@@ -109,15 +117,21 @@ const UpdateTaskModal = ({ task, modalActive, setModalActive }) => {
                     </SettingButton>
                     <SettingButton disabled={isDate} onClick={toggleRepeatStatus}>
                         <div>REPEAT: {isRepeat ? "YES" : "NO"}</div>
-                        {isRepeat &&
-                            <RepeatingDaysWrapper onChange={handleSetRepeatingDays} onClick={e => e.stopPropagation()}>
-                                {Object.entries(repeatingDays).map(([day, repeat]) => (
+                        {isRepeat && (
+                            <RepeatingDaysWrapper
+                                onChange={handleSetRepeatingDays}
+                                onClick={e => e.stopPropagation()}>
+                                {Object.entries(repeatingDays).map(([day, repeat]: any) => (
                                     <span key={day}>
-                                        <DayButton defaultChecked={repeat} value={[day, repeat]} name={day} id={day} />
+                                        <DayButton
+                                            defaultChecked={repeat}
+                                            value={[day, repeat]}
+                                            name={day}
+                                            id={day} />
                                         <DayLabel htmlFor={day}>{day}</DayLabel>
                                     </span>
                                 ))}
-                            </RepeatingDaysWrapper>}
+                            </RepeatingDaysWrapper>)}
                     </SettingButton>
                     <ColorTitle>COLOR</ColorTitle>
                     <ColorsSelect onChange={handleSetTaskColor}>
