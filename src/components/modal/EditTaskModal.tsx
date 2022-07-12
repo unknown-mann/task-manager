@@ -5,7 +5,7 @@ import { useAppDispatch } from "../../hooks/hooks";
 import { TaskType } from "../../types/Types";
 import { updateTask } from "../../app/tasksSlice";
 import { isTaskRepeating } from "../../utils/utils";
-import { COLORS, MODAL_EL_VARIANTS, MODAL_CONTENT_VARIANTS } from "../../const";
+import { COLORS, MODAL_EL_VARIANTS, MODAL_CONTENT_VARIANTS, IS_REPEATING_DAYS } from "../../const";
 import {
     Modal,
     ModalContent,
@@ -77,7 +77,7 @@ const UpdateTaskModal: React.FC<PropsType> = ({ task, modalActive, setModalActiv
     };
     const toggleRepeatStatus = () => {
         setIsRepeat(!isRepeat)
-        setRepeatingDays(task.repeatingDays)
+        setRepeatingDays(IS_REPEATING_DAYS)
 
     };
 
