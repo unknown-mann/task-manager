@@ -25,8 +25,9 @@ import {
   ColorLabel,
   SaveButton,
 } from "./Modal";
+import { nanoid } from "nanoid";
 
-const Bar = styled.div<{isRepeat: boolean}>`
+const Bar = styled.div<{ isRepeat: boolean }>`
   border-bottom: 10px ${(props) => (props.isRepeat ? "dashed" : "solid")}
     ${(props) => props.color};
 `;
@@ -87,7 +88,7 @@ export const AddTaskModal: React.FC<PropsType> = ({ modalActive, setModalActive 
   const handleAddNewTask = () => {
     dispatch(
       addNewTask({
-        id: '0',
+        id: nanoid(),
         color,
         description,
         dueDate: date,

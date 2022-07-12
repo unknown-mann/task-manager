@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk, AnyAction, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
-import { nanoid } from "nanoid";
 import type { TaskType, StateType } from "../types/Types";
 
 const BASE_URL = 'https://server-for--task-manager.herokuapp.com/tasks/';
@@ -20,7 +19,7 @@ export const addNewTask = createAsyncThunk<TaskType, TaskType, { rejectValue: st
     async (task, { rejectWithValue }) => {
         try {
             const respone = await axios.post(BASE_URL, {
-                "id": nanoid(),
+                "id": task.id,
                 "color": task.color,
                 "description": task.description,
                 "dueDate": task.dueDate,
