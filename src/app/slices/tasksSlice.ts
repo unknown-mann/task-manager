@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, AnyAction, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
-import type { TaskType, StateType } from "../types/Types";
+import type { TaskType, StateType } from "../../types/Types";
 
 const BASE_URL = 'https://server-for--task-manager.herokuapp.com/tasks/';
 
@@ -111,18 +111,13 @@ export const updateTask = createAsyncThunk<TaskType, TaskType, { rejectValue: st
 const initialState: StateType = {
     tasks: [],
     status: 'idle',
-    error: null,
-    sort: 'default'
+    error: null
 }
 
 const tasksSlice = createSlice({
     name: 'tasks',
     initialState,
-    reducers: {
-        switchSortType(state, action) {
-            state.sort = action.payload
-        }
-    },
+    reducers: {},
     extraReducers: (builder) => {
         builder
             .addCase(fetchTasks.pending, (state) => {
@@ -170,7 +165,5 @@ const tasksSlice = createSlice({
 const isEror = (action: AnyAction) => {
     return action.type.endsWith('rejected')
 }
-
-export const { switchSortType } = tasksSlice.actions
 
 export default tasksSlice.reducer

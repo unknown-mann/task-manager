@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { AnimatePresence } from "framer-motion";
 import { useAppDispatch } from "../../hooks/hooks";
 import { TaskType } from "../../types/Types";
-import { updateTask } from "../../app/tasksSlice";
+import { updateTask } from "../../app/slices/tasksSlice";
 import { isTaskRepeating } from "../../utils/utils";
 import { COLORS, MODAL_EL_VARIANTS, MODAL_CONTENT_VARIANTS, IS_REPEATING_DAYS } from "../../const";
 import {

@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useAppDispatch } from "../hooks/hooks";
 import { formatTaskDueDate } from "../utils/utils";
 import { isTaskExpired, isTaskRepeating, taskRepeatingDays } from "../utils/utils";
-import { deleteTask, toggleArchive, toggleFavorite } from "../app/tasksSlice";
+import { deleteTask, toggleArchive, toggleFavorite } from "../app/slices/tasksSlice";
 import { TaskType } from "../types/Types";
 import { motion } from "framer-motion";
 import EditTaskModal from "./modal/EditTaskModal";

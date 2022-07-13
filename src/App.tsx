@@ -10,7 +10,7 @@ import TodayTasks from './pages/TodayTasks';
 import FavoriteTasks from './pages/FavoriteTasks';
 import RepeatingTasks from './pages/RepeatingTasks';
 import ArchiveTasks from './pages/ArchiveTasks';
-import { fetchTasks } from './app/tasksSlice';
+import { fetchTasks } from './app/slices/tasksSlice';
 import { selectFilteredTasks } from './app/selectors';
 import { isTaskExpired, isTaskExpiringToday, isTaskRepeating, isTaskActiveToday } from './utils/utils';
 

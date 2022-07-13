@@ -8,4 +8,4 @@ export const Spinner: React.FC<{text: string, size?: string}> = ({ text = '', si
       <div className="loader" style={{ height: size, width: size }} />
     </div>
   )
-}
+};

@@ -1,7 +1,7 @@
 import React, { ChangeEvent } from "react";
 import { useAppDispatch } from "../hooks/hooks";
 import styled from "styled-components";
-import { switchSortType } from "../app/tasksSlice";
+import { switchSortBy } from "../app/slices/sortSlice";
 
 const SortEl = styled.form`
   display: flex;
@@ -40,7 +40,7 @@ const SortLabel = styled.label`
 const SortBar: React.FC = React.memo(() => {
   const dispatch = useAppDispatch();
 
-  const onClickHandler = (e: ChangeEvent<HTMLFormElement>) => dispatch(switchSortType(e.target.value));
+  const onClickHandler = (e: ChangeEvent<HTMLFormElement>) => dispatch(switchSortBy(e.target.value));
 
   return (
     <SortEl onChange={onClickHandler}>

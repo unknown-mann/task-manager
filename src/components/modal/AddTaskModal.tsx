@@ -2,7 +2,7 @@ import React, { ChangeEvent, useState } from "react";
 import styled from "styled-components";
 import { AnimatePresence } from "framer-motion";
 import { useAppDispatch } from "../../hooks/hooks";
-import { addNewTask } from "../../app/tasksSlice";
+import { addNewTask } from "../../app/slices/tasksSlice";
 import { isTaskRepeating } from "../../utils/utils";
 import {
   COLORS,
