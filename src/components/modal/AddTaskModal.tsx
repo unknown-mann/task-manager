@@ -176,7 +176,7 @@ export const AddTaskModal: React.FC<PropsType> = ({ modalActive, setModalActive 
             </ColorsSelect>
             <SaveButton
               disabled={!isSaveButtonDisabled || isLoading}
-              onClick={() => handleAddTask()}
+              onClick={handleAddTask}
             >
               {isLoading ? 'SAVING...' : 'SAVE'}
             </SaveButton>

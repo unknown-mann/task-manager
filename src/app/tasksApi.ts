@@ -24,7 +24,10 @@ export const tasksApi = createApi({
         deleteTask: builder.mutation<TaskType[], string>({
             query: id => ({
                 url: `tasks/${id}`,
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             }),
             invalidatesTags: ['Task']
         }),
@@ -32,6 +35,9 @@ export const tasksApi = createApi({
             query: ({ id, color, description, dueDate, repeatingDays }) => ({
                 url: `tasks/${id}`,
                 method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 body: {
                     id,
                     color,
@@ -46,6 +52,9 @@ export const tasksApi = createApi({
             query: ({ id, isArchived }) => ({
                 url: `tasks/${id}`,
                 method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 body: {
                     isArchived: !isArchived
                 }
@@ -56,6 +65,9 @@ export const tasksApi = createApi({
             query: ({ id, isFavorite }) => ({
                 url: `tasks/${id}`,
                 method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 body: {
                     isFavorite: !isFavorite
                 }

@@ -145,7 +145,7 @@ const UpdateTaskModal: React.FC<PropsType> = ({ task, modalActive, setModalActiv
                             </span>
                         ))}
                     </ColorsSelect>
-                    <UpdateButton disabled={!isUpdateButtonDisabled || isLoading} onClick={() => handleUpdateTask()}>
+                    <UpdateButton disabled={!isUpdateButtonDisabled || isLoading} onClick={handleUpdateTask}>
                         {isLoading ? 'UPDATING...' : 'UPDATE'}
                     </UpdateButton>
                 </ModalContent>
