@@ -56,9 +56,9 @@ const NavItem = styled(NavLink) <{ disabled?: boolean }>`
   }
 `;
 
-const Header: React.FC<Record<string, number>> = ({ allTasksNum, favoriteTasksNum, repeatingTasksNum, archivedTasksNum, expiredTasksNum, todayTasksNum }) => {
+const Header: React.FC<Record<string, number | undefined>> = ({ allTasksNum, favoriteTasksNum, repeatingTasksNum, archivedTasksNum, expiredTasksNum, todayTasksNum }) => {
 
-  const isDisabledHandler = (param: number) => (event: React.MouseEvent<HTMLElement>) => {
+  const isDisabledHandler = (param: number | undefined) => (event: React.MouseEvent<HTMLElement>) => {
     !param && event.preventDefault()
   }
 

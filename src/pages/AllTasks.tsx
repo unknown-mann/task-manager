@@ -1,25 +1,34 @@
 import React from 'react';
 import { TaskList } from '../components/TaskList';
 import { Spinner } from '../components/Spinner';
-import { StateType } from '../types/Types';
+import { TaskType } from '../types/Types';
 
-const AllTasks: React.FC<StateType> = ({ tasks, status, error }) => {
+type PropsType = {
+    tasks: TaskType[],
+    isLoading: boolean,
+    isError: boolean,
+    error: any
+}
 
-    let content
+const AllTasks: React.FC<PropsType> = ({ tasks, isLoading, isError, error }) => {
 
-    if (status === 'loading') {
-        content = <Spinner text='Loading...' />
-    } else if (status === 'rejected') {
-        content = <h1>Error: {error}</h1>
-    } else if (status === 'succeeded') {
-        content = <TaskList tasks={tasks} />
+    if (isLoading) {
+        return <Spinner text='Loading...' />
+    } else if (isError) {
+        if ('status' in error) {
+            const errMsg = 'error' in error ? error.error : JSON.stringify(error.data)
+            return (
+                <div>
+                    <h1>An error has occurred</h1>
+                    <h2>{errMsg}</h2>
+                </div>
+            )
+        } else {
+            return <div>{error.message}</div>
+        }
+    } else {
+        return <TaskList tasks={tasks} />
     }
-
-    return (
-        <>
-            {content}
-        </>
-    )
 };
 
 export default AllTasks;

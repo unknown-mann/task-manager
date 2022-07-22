@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { useAppDispatch } from "../hooks/hooks";
 import { formatTaskDueDate } from "../utils/utils";
 import { isTaskExpired, isTaskRepeating, taskRepeatingDays } from "../utils/utils";
-import { deleteTask, toggleArchive, toggleFavorite } from "../app/slices/tasksSlice";
+import { useDeleteTaskMutation, useToggleArchiveMutation, useToggleFavoriteMutation } from "../app/tasksApi";
 import { TaskType } from "../types/Types";
 import { motion } from "framer-motion";
 import EditTaskModal from "./modal/EditTaskModal";
@@ -15,7 +14,7 @@ const TaskEl = styled(motion.article)`
     margin-bottom: 40px;
     margin-right: 59px;
 `
-const TaskContent = styled.div<{isExpired: boolean}>`
+const TaskContent = styled.div<{ isExpired: boolean }>`
     position: absolute;
     width: 100%;
     top: 0;
@@ -31,11 +30,11 @@ const TaskContent = styled.div<{isExpired: boolean}>`
     :hover {
         outline: 10px solid white;
         transition: outline-width 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-        box-shadow: ${props => props.isExpired 
-            ? 
-            '0 -14px 38px 0 rgba(240, 0, 0, 0.19), 0 14px 38px 0 rgba(240, 0, 0, 0.19);' 
-            : 
-            '0 -14px 38px 0 rgba(35, 113, 245, 0.07), 0 14px 38px 0 rgba(35, 113, 245, 0.07);'}
+        box-shadow: ${props => props.isExpired
+        ?
+        '0 -14px 38px 0 rgba(240, 0, 0, 0.19), 0 14px 38px 0 rgba(240, 0, 0, 0.19);'
+        :
+        '0 -14px 38px 0 rgba(35, 113, 245, 0.07), 0 14px 38px 0 rgba(35, 113, 245, 0.07);'}
         z-index: 1;
         button {
             opacity: 1;
@@ -73,10 +72,14 @@ const Button = styled.button`
     color: ${props => props.color || 'inherit'};
     :hover {
         transition: 0s;
-    };
+    }
+    :disabled {
+        color: rgba(0, 0, 0, 0.4);
+        cursor: not-allowed;
+    }
 `;
 
-const ColorEl = styled.span<{isRepeating: boolean, isExpired: boolean}>`
+const ColorEl = styled.span<{ isRepeating: boolean, isExpired: boolean }>`
     border-bottom: 10px ${props => props.isRepeating ? 'dashed' : 'solid'} ;
     border-color: ${props => props.isExpired ? 'red' : props.color};
 `;
@@ -95,7 +98,7 @@ const Wrapper = styled.div`
     margin-top: auto;
 `;
 
-const DateEl = styled.span<{isExpired: boolean}>`
+const DateEl = styled.span<{ isExpired: boolean }>`
     margin-bottom: 8px;
     font-size: 12px;
     font-weight: 500;
@@ -126,17 +129,41 @@ const Task: React.FC<PropsType> = React.memo(({ task }) => {
         repeatingDays
     } = task
 
-    const dispatch = useAppDispatch();
-
     const [modalActive, setModalActive] = useState(false)
-
-    const handleToggleArchive = (id: string) => dispatch(toggleArchive(id));
-    const handleToggleFavorite = (id: string) => dispatch(toggleFavorite(id));
-    const handleDeleteTask = (id: string) => dispatch(deleteTask(id));
 
     const isExpired = isTaskExpired(dueDate)
     const isRepeating = isTaskRepeating(repeatingDays)
     const repeatsOn = taskRepeatingDays(repeatingDays)
+
+    const [deleteTask, { isLoading: isDeletingLoading }] = useDeleteTaskMutation()
+
+    const handleDeleteTask = async (id: string) => {
+        try {
+            await deleteTask(id).unwrap()
+        } catch {
+            alert('Failed to delete the task')
+        }
+    }
+
+    const [toggleArchive, { isLoading: isArchivingLoading }] = useToggleArchiveMutation()
+
+    const handleToggleArchive = async (id: string, isArchived: boolean) => {
+        try {
+            await toggleArchive({ id, isArchived }).unwrap()
+        } catch {
+            alert('Failed to toggle archive task')
+        }
+    }
+
+    const [toggleFavorite, { isLoading: isToggling }] = useToggleFavoriteMutation()
+
+    const handleToggleFavorite = async (id: string, isFavorite: boolean) => {
+        try {
+            await toggleFavorite({ id, isFavorite }).unwrap()
+        } catch {
+            alert('Failed to toggle favorite task')
+        }
+    }
 
     return (
         <TaskEl
@@ -146,9 +173,9 @@ const Task: React.FC<PropsType> = React.memo(({ task }) => {
             <TaskContent isExpired={isExpired as boolean}>
                 <ButtonsWrapper>
                     <Button onClick={() => setModalActive(true)}>EDIT</Button>
-                    <Button onClick={() => handleToggleArchive(id)}>
+                    <Button disabled={isArchivingLoading} onClick={() => handleToggleArchive(id, isArchived as boolean)}>
                         {isArchived ? 'UNARCHIVE' : 'ARCHIVE'}</Button>
-                    <Button onClick={() => handleToggleFavorite(id)}>{isFavorite ? 'DEL ' : 'ADD '}FAV</Button>
+                    <Button disabled={isToggling} onClick={() => handleToggleFavorite(id, isFavorite as boolean)}>{isFavorite ? 'DEL ' : 'ADD '}FAV</Button>
                 </ButtonsWrapper>
                 <ColorEl color={color} isExpired={isExpired as boolean} isRepeating={isRepeating} />
                 <DescriptionEl>{description}</DescriptionEl>
@@ -163,7 +190,7 @@ const Task: React.FC<PropsType> = React.memo(({ task }) => {
                                     ))}
                                 </RepeatingDays>)}
                     </DateEl>
-                    <Button onClick={() => handleDeleteTask(id)} color="red">DELETE</Button>
+                    <Button disabled={isDeletingLoading} onClick={() => handleDeleteTask(id)} color="red">{isDeletingLoading ? 'DELETING...' : 'DELETE'}</Button>
                 </Wrapper>
             </TaskContent>
             {modalActive && <EditTaskModal modalActive={modalActive} setModalActive={setModalActive} task={task} />}

@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import { TaskType } from "../types/Types";
 
 type RepeatingDays = {
     [key: string]: boolean
@@ -36,14 +37,27 @@ const getWeightForNullDate = (dateA: string, dateB: string) => {
     return null;
 };
 
-export const sortTaskUp = (taskA: SortType, taskB: SortType) => {
+const sortTaskUp = (taskA: SortType, taskB: SortType) => {
     const weight = getWeightForNullDate(taskA.dueDate, taskB.dueDate);
-    
+
     return weight ?? dayjs(taskA.dueDate).diff(dayjs(taskB.dueDate));
 };
 
-export const sortTaskDown = (taskA: SortType, taskB: SortType) => {
+const sortTaskDown = (taskA: SortType, taskB: SortType) => {
     const weight = getWeightForNullDate(taskA.dueDate, taskB.dueDate);
 
     return weight ?? dayjs(taskB.dueDate).diff(dayjs(taskA.dueDate));
+};
+
+export const sortTasks = (tasks: TaskType[], sort: string) => {
+    if (tasks) {
+        switch (sort) {
+            case 'up':
+                return [...tasks].sort(sortTaskUp)
+            case 'down':
+                return [...tasks].sort(sortTaskDown)
+            default:
+                return tasks
+        }
+    }
 };

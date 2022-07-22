@@ -10,16 +10,6 @@ export type TaskType = {
     }
 };
 
-export type StateType = {
-    tasks: TaskType[],
-    status: 'idle' | 'loading' | 'succeeded' | 'rejected',
-    error: string | null
-};
-
 export type PropsType = {
     tasks: TaskType[]
-};
-
-export type SortType = {
-    sort: 'default' | 'up' | 'down'
 };

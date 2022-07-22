@@ -1,8 +1,7 @@
 import React, { ChangeEvent, useState } from "react";
 import styled from "styled-components";
 import { AnimatePresence } from "framer-motion";
-import { useAppDispatch } from "../../hooks/hooks";
-import { addNewTask } from "../../app/slices/tasksSlice";
+import { useAddTaskMutation } from "../../app/tasksApi";
 import { isTaskRepeating } from "../../utils/utils";
 import {
   COLORS,
@@ -52,7 +51,6 @@ type PropsType = {
 };
 
 export const AddTaskModal: React.FC<PropsType> = ({ modalActive, setModalActive }) => {
-  const dispatch = useAppDispatch();
 
   const [color, setColor] = useState("black");
   const [description, setDescription] = useState("");
@@ -85,24 +83,30 @@ export const AddTaskModal: React.FC<PropsType> = ({ modalActive, setModalActive 
   const isRepeatAndIsDate = Boolean(date) || isTaskRepeating(repeatingDays);
   const isSaveButtonDisabled = isRepeatAndIsDate && Boolean(description.trim().length);
 
-  const handleAddNewTask = () => {
-    dispatch(
-      addNewTask({
+  const [addTask, { isLoading }] = useAddTaskMutation()
+
+  const handleAddTask = async () => {
+    try {
+      await addTask({
         id: nanoid(),
         color,
         description,
+        isArchived: false,
+        isFavorite: false,
         dueDate: date,
         repeatingDays,
-      })
-    );
-    setColor("black");
-    setDescription("");
-    setDate("");
-    setRepeatingDays(IS_REPEATING_DAYS);
-    setIsDate(false);
-    setIsRepeat(false);
-    setModalActive(false);
-  };
+      }).unwrap()
+      setColor("black");
+      setDescription("");
+      setDate("");
+      setRepeatingDays(IS_REPEATING_DAYS);
+      setIsDate(false);
+      setIsRepeat(false);
+      setModalActive(false);
+    } catch {
+      alert('Failed to add the task')
+    }
+  }
 
   return (
     <AnimatePresence>
@@ -171,10 +175,10 @@ export const AddTaskModal: React.FC<PropsType> = ({ modalActive, setModalActive 
               ))}
             </ColorsSelect>
             <SaveButton
-              disabled={!isSaveButtonDisabled}
-              onClick={() => handleAddNewTask()}
+              disabled={!isSaveButtonDisabled || isLoading}
+              onClick={() => handleAddTask()}
             >
-              SAVE
+              {isLoading ? 'SAVING...' : 'SAVE'}
             </SaveButton>
           </ModalContent>
         </Modal>

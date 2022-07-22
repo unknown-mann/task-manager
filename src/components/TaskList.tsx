@@ -40,7 +40,7 @@ const item = {
 
 export const TaskList: React.FC<PropsType> = ({ tasks }) => {
 
-    if (!tasks.length) {
+    if (!tasks?.length) {
         return (
             <h1>There isn`t any tasks</h1>
         )

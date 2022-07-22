@@ -1,9 +1,8 @@
 import React, { ChangeEvent, useState } from "react";
 import styled from "styled-components";
 import { AnimatePresence } from "framer-motion";
-import { useAppDispatch } from "../../hooks/hooks";
 import { TaskType } from "../../types/Types";
-import { updateTask } from "../../app/slices/tasksSlice";
+import { useEditTaskMutation } from "../../app/tasksApi";
 import { isTaskRepeating } from "../../utils/utils";
 import { COLORS, MODAL_EL_VARIANTS, MODAL_CONTENT_VARIANTS, IS_REPEATING_DAYS } from "../../const";
 import {
@@ -22,7 +21,7 @@ import {
     SaveButton as UpdateButton
 } from "./Modal";
 
-const Bar = styled.div<{isRepeat: boolean}>`
+const Bar = styled.div<{ isRepeat: boolean }>`
     border-bottom: 10px ${props => props.isRepeat ? 'dashed' : 'solid'} ${props => props.color};
 `;
 
@@ -47,8 +46,6 @@ type PropsType = {
 }
 
 const UpdateTaskModal: React.FC<PropsType> = ({ task, modalActive, setModalActive }) => {
-
-    const dispatch = useAppDispatch();
 
     const [taskColor, setTaskColor] = useState(task.color);
     const [description, setDescription] = useState(task.description);
@@ -84,15 +81,21 @@ const UpdateTaskModal: React.FC<PropsType> = ({ task, modalActive, setModalActiv
     const isRepeatAndIsDate = Boolean(date) || isTaskRepeating(repeatingDays)
     const isUpdateButtonDisabled = isRepeatAndIsDate && Boolean(description.trim().length)
 
-    const handleUpdateTask = () => {
-        dispatch(updateTask({
-            id: task.id,
-            color: taskColor,
-            description,
-            dueDate: date,
-            repeatingDays
-        }))
-        setModalActive(false)
+    const [updateTask, { isLoading }] = useEditTaskMutation()
+
+    const handleUpdateTask = async () => {
+        try {
+            await updateTask({
+                id: task.id,
+                color: taskColor,
+                description,
+                dueDate: date,
+                repeatingDays
+            }).unwrap()
+            setModalActive(false)
+        } catch {
+            alert('Failed to edit the task')
+        }
     };
 
     return (
@@ -142,7 +145,9 @@ const UpdateTaskModal: React.FC<PropsType> = ({ task, modalActive, setModalActiv
                             </span>
                         ))}
                     </ColorsSelect>
-                    <UpdateButton disabled={!isUpdateButtonDisabled} onClick={() => handleUpdateTask()}>UPDATE</UpdateButton>
+                    <UpdateButton disabled={!isUpdateButtonDisabled || isLoading} onClick={() => handleUpdateTask()}>
+                        {isLoading ? 'UPDATING...' : 'UPDATE'}
+                    </UpdateButton>
                 </ModalContent>
             </Modal>}
         </AnimatePresence>
